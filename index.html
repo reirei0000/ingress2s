@@ -18,10 +18,23 @@
   bottom: 0;
   width: 100%;
 }
+#mi_img {
+  font-family: 'Open Sans', sans-serif;
+  position: absolute;
+  padding: 20px;
+}
+#mi_img img{
+  width:  200px;
+  object-fit: cover;
+  border: 1px solid #dddddd;
+}
   </style>
 </head>
 <body>
   <div id='map' style='width: 630px; height: 630px;'></div>
+  <div id="mi_img">
+  <img src = "https://api.bannergress.com/bnrs/pictures/b04a8c0a85d0e3c52a20b3b503faf590">
+  </div>
   <script>
     var transformRequest = (url, resourceType) => {
       var isMapboxRequest = url.slice(8, 22) === "api.mapbox.com" || url.slice(10, 26) === "tiles.mapbox.com";
