@@ -35,6 +35,7 @@
   <div id="mi_img">
   <img src = "https://api.bannergress.com/bnrs/pictures/b04a8c0a85d0e3c52a20b3b503faf590">
   </div>
+  <a id="downloadLink" href="" download="map.png">Download</a>
   <script>
     var transformRequest = (url, resourceType) => {
       var isMapboxRequest = url.slice(8, 22) === "api.mapbox.com" || url.slice(10, 26) === "tiles.mapbox.com";
@@ -48,7 +49,8 @@
       style: 'mapbox://styles/yoghurton/ckugj16i2dcvv18nzueec9ga9',
       center: [136.000, 36.41000],
       zoom: 4.10,
-      transformRequest: transformRequest
+      transformRequest: transformRequest,
+      preserveDrawingBuffer: true
     });
     $(document).ready(function () {
       $.ajax({
@@ -83,7 +85,18 @@
             });
           });
         };
+        $("a.mapbox-improve-map").text("");
       });
+
+      var dpi = 300;
+      Object.defineProperty(window, 'devicePixelRatio', {
+          get: function() {return dpi / 96}
+      });
+
+      $('#downloadLink').click(function() {
+        var img = map.getCanvas().toDataURL('image/png')
+        this.href = img
+      })
 
   </script>
 </body>
