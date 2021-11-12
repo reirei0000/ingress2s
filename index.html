@@ -5,8 +5,8 @@
   <title>Ingress2S</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
-  <script src='https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js'></script>
-  <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.css' rel='stylesheet' />
   <script src='https://npmcdn.com/csv2geojson@latest/csv2geojson.js'></script>
   <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
   <script src="https://kit.fontawesome.com/5015486454.js" crossorigin="anonymous"></script>
@@ -72,10 +72,14 @@
 
       function makeGeoJSON(csvData) {
         var lines = csvData.split('\n');
-        var data = '"lat2","lng2"'
+        var data = '"lat2","lng2","description"'
         lines.forEach(l=>{
+          var title = l.split(',')[4]
+          var bannergressUrl = l.split(',')[9]
+          console.log(bannergressUrl)
+          var bannerUrl = l.match(/https?:\/\/api[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+/g)
           var ll = l.match(/[&|\?]ll=(.*?)[&|$]/);
-          if (ll) data += `\n${ll[1]}`
+          if (ll) data += `\n${ll[1]},<img src=${bannerUrl[0]} width=128></br><a href=${bannergressUrl} target="_blank" rel="noopener noreferrer">${title}</a>`
         })
 
         csv2geojson.csv2geojson(data, {
@@ -98,6 +102,27 @@
               },
               'filter': ['==', '$type', 'Point'],
             });
+
+            map.on('click', 'csvData', (e) => {
+              const coordinates = e.features[0].geometry.coordinates.slice();
+              const description = e.features[0].properties.description;
+
+              while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+              }
+
+              new mapboxgl.Popup()
+                .setLngLat(coordinates)
+                .setHTML(description)
+                .addTo(map);
+            });
+            map.on('mouseenter', 'csvData', () => {
+              map.getCanvas().style.cursor = 'pointer';
+            });
+            map.on('mouseleave', 'csvData', () => {
+              map.getCanvas().style.cursor = '';
+            });
+
           });
         };
         $("a.mapbox-improve-map").text("");
