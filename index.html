@@ -38,7 +38,10 @@
 <body>
   <div id='map' style='width: 630px; height: 630px;'></div>
   <div id="mi_img">
-  <img src = "https://api.bannergress.com/bnrs/pictures/b04a8c0a85d0e3c52a20b3b503faf590">
+  <img src = "https://api.bannergress.com/bnrs/pictures/fce245de95a42f99c394f815694094dd"> </br>
+  <img src = "https://api.bannergress.com/bnrs/pictures/00a50bc108284da18d78b89008d2bf26"> </br>
+  <img src = "https://api.bannergress.com/bnrs/pictures/e08141b72bd34b793b6d9ca9cff8cea4"> </br>
+  <img src = "https://api.bannergress.com/bnrs/pictures/095b63f1165cc3878642a41fc812b34e">
   </div>
   <a id="downloadLink" href="" download="map.png">Download</a>
   <script>
@@ -60,7 +63,7 @@
     $(document).ready(function () {
       $.ajax({
         type: "GET",
-        url: 'https://docs.google.com/spreadsheets/d/1F50Yejamn7F1K_gm0dVgJ8sJEBkzivb3Y626f8O35SM/gviz/tq?tqx=out:csv&sheet=map_data',
+        url: 'https://docs.google.com/spreadsheets/d/1F50Yejamn7F1K_gm0dVgJ8sJEBkzivb3Y626f8O35SM/gviz/tq?tqx=out:csv&sheet=Second%20Sunday',
         dataType: "text",
         success: function (csvData) {
           makeGeoJSON(csvData);
@@ -68,7 +71,14 @@
       });
 
       function makeGeoJSON(csvData) {
-        csv2geojson.csv2geojson(csvData, {
+        var lines = csvData.split('\n');
+        var data = '"lat2","lng2"'
+        lines.forEach(l=>{
+          var ll = l.match(/[&|\?]ll=(.*?)[&|$]/);
+          if (ll) data += `\n${ll[1]}`
+        })
+
+        csv2geojson.csv2geojson(data, {
           latfield: 'lat2',
           lonfield: 'lng2',
           delimiter: ','
